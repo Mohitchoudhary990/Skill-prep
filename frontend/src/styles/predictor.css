@@ -1,0 +1,70 @@
+/* ─── predictor.css  (Placement Predictor page) ─────────────────────────────── */
+
+/* ── Predictor Form Layout ──────────────────────────────────────────────────── */
+.predictor-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (max-width: 640px) {
+    .predictor-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Tier Badge ─────────────────────────────────────────────────────────────── */
+.tier-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 1.1rem;
+    border-radius: 100px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.tier-high {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--success);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.tier-medium {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--warning);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.tier-low {
+    background: rgba(239, 68, 68, 0.12);
+    color: var(--danger);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+/* ── Factor List ────────────────────────────────────────────────────────────── */
+.factor-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.875rem;
+}
+
+.factor-row:last-child {
+    border-bottom: none;
+}
+
+.factor-impact-positive {
+    color: var(--success);
+    font-weight: 600;
+}
+
+.factor-impact-negative {
+    color: var(--danger);
+    font-weight: 600;
+}

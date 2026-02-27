@@ -1,0 +1,97 @@
+/* ─── roadmap.css  (Roadmap / Learning path page) ───────────────────────────── */
+
+/* ── Timeline Item ──────────────────────────────────────────────────────────── */
+.roadmap-item {
+    display: flex;
+    gap: 1.5rem;
+    position: relative;
+}
+
+.roadmap-item:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 46px;
+    width: 2px;
+    height: calc(100% + 1.5rem);
+    background: linear-gradient(to bottom, var(--accent), transparent);
+    opacity: 0.3;
+}
+
+.roadmap-dot {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(99, 102, 241, 0.15);
+    border: 2px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.roadmap-content {
+    flex: 1;
+}
+
+/* ── Resources ──────────────────────────────────────────────────────────────── */
+.resource-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.875rem;
+}
+
+.resource-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 0.875rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 0.825rem;
+    transition: var(--transition);
+}
+
+.resource-item:hover {
+    background: rgba(99, 102, 241, 0.08);
+    border-color: rgba(99, 102, 241, 0.25);
+    color: var(--text-primary);
+}
+
+.resource-type {
+    font-size: 0.7rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 100px;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+.rt-video {
+    background: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+}
+
+.rt-article {
+    background: rgba(99, 102, 241, 0.15);
+    color: #a5b4fc;
+}
+
+.rt-course {
+    background: rgba(16, 185, 129, 0.15);
+    color: #6ee7b7;
+}
+
+.rt-practice {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fcd34d;
+}
