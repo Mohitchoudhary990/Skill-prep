@@ -60,6 +60,10 @@ app.use('/api/resumes', require('./routes/resumeRoutes'));
 app.use('/api/interviews', require('./routes/interviewRoutes'));
 app.use('/api/predictions', require('./routes/predictionRoutes'));
 app.use('/api/learning', require('./routes/learningRoutes'));
+app.use('/api/predict', require('./routes/predict'));       // ML proxy (no auth required)
+app.use('/api/roadmap', require('./routes/roadmap'));       // ML proxy (no auth required)
+app.use('/api/skillgap', require('./routes/skillgap'));     // ML proxy (no auth required)
+app.use('/api/interview', require('./routes/interview'));   // ML proxy (no auth required)
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
 app.get('/health', (_req, res) =>
