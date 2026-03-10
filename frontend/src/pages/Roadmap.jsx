@@ -2,13 +2,15 @@ import React, { useState } from 'react'
 import axios from 'axios'
 import '../styles/roadmap.css'
 
-const API = 'http://localhost:5000/api'
+const API = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000/api'
 
 const ROLES = [
     { key: 'SDE', icon: '💻', label: 'SDE' },
     { key: 'AIML', icon: '🧠', label: 'AI / ML' },
     { key: 'Data Analyst', icon: '📊', label: 'Data Analyst' },
 ]
+
+const QUICK_TOPICS = ['Graphs', 'Dynamic Programming', 'System Design', 'Machine Learning', 'SQL', 'Communication', 'React']
 
 const RT_CLASS = { video: 'rt-video', article: 'rt-article', course: 'rt-course', practice: 'rt-practice' }
 
@@ -73,8 +75,8 @@ export default function Roadmap() {
 
                             <div className="form-group">
                                 <label>
-                                    Weak Areas / Topics to Improve{' '}
-                                    <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>(leave blank for auto-detect)</span>
+                                    Weak Areas / Topics{' '}
+                                    <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>(leave blank to auto-detect)</span>
                                 </label>
                                 <div className="input-tag-container" onClick={() => document.getElementById('weak-inp')?.focus()}>
                                     {weakAreas.map(w => (
@@ -91,12 +93,13 @@ export default function Roadmap() {
                                         placeholder={weakAreas.length === 0 ? 'e.g. Graphs, DP, Communication...' : ''}
                                     />
                                 </div>
+                                {/* Quick add chips */}
                                 <div className="tags-cloud" style={{ marginTop: '0.5rem' }}>
-                                    {['Graphs', 'Dynamic Programming', 'System Design', 'Machine Learning', 'SQL', 'Communication', 'React'].map(s => (
+                                    {QUICK_TOPICS.filter(s => !weakAreas.includes(s)).map(s => (
                                         <span key={s}
                                             className="skill-tag"
-                                            style={{ cursor: 'pointer', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border)', fontSize: '0.75rem', color: 'var(--text-secondary)' }}
-                                            onClick={() => { if (!weakAreas.includes(s)) setWeakAreas(p => [...p, s]) }}>
+                                            style={{ cursor: 'pointer', background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.18)', color: 'var(--text-secondary)', fontSize: '0.73rem', transition: 'var(--transition)' }}
+                                            onClick={() => setWeakAreas(p => [...p, s])}>
                                             + {s}
                                         </span>
                                     ))}
@@ -118,7 +121,9 @@ export default function Roadmap() {
 
                             {error && <div className="info-box info-box-danger" style={{ marginBottom: '1rem' }}>{error}</div>}
                             <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
-                                {loading ? '⏳ Generating...' : '🗺️ Generate My Roadmap'}
+                                {loading ? (
+                                    <><span className="spinner" style={{ width: 18, height: 18, borderWidth: 2 }} /> Generating…</>
+                                ) : '🗺️ Generate My Roadmap'}
                             </button>
                         </form>
                     </div>
@@ -126,26 +131,29 @@ export default function Roadmap() {
                     {/* ── Result ── */}
                     <div>
                         {!result && !loading && (
-                            <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
-                                <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🗺️</div>
-                                <p style={{ color: 'var(--text-secondary)' }}>Your personalized roadmap will appear here.</p>
+                            <div className="card" style={{ textAlign: 'center', padding: '3.5rem 2rem' }}>
+                                <div style={{ fontSize: '4.5rem', marginBottom: '1rem' }} className="animate-float">🗺️</div>
+                                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', maxWidth: 240, margin: '0 auto' }}>
+                                    Your personalized roadmap will appear here once you submit.
+                                </p>
                             </div>
                         )}
                         {loading && (
-                            <div className="card loading-center">
-                                <div className="spinner"></div>
-                                <span>Generating roadmap for {role}...</span>
+                            <div className="card loading-center" style={{ minHeight: 200 }}>
+                                <div className="spinner" />
+                                <span>Generating roadmap for {role}…</span>
                             </div>
                         )}
                         {result && (
                             <div className="results-panel">
-                                <div className="card" style={{ marginBottom: '1.25rem' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
-                                        <div>
-                                            <h3>{role} Roadmap</h3>
-                                            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-                                                {result.total_topics} topic{result.total_topics !== 1 ? 's' : ''} · {result.target_weeks} week plan
-                                            </p>
+                                <div className="card" style={{ marginBottom: '1.5rem' }}>
+                                    <h3 style={{ marginBottom: '0.375rem' }}>{role} Roadmap</h3>
+                                    <div className="roadmap-summary">
+                                        <div className="roadmap-summary-stat">
+                                            <strong>{result.total_topics}</strong> topics
+                                        </div>
+                                        <div className="roadmap-summary-stat">
+                                            <strong>{result.target_weeks}</strong> week plan
                                         </div>
                                     </div>
                                     <div className="info-box info-box-info" style={{ marginTop: '1rem' }}>
@@ -153,10 +161,10 @@ export default function Roadmap() {
                                     </div>
                                 </div>
 
-                                {/* Roadmap timeline */}
+                                {/* Timeline */}
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                                     {result.roadmap.map((item, idx) => (
-                                        <div className="roadmap-item" key={idx}>
+                                        <div className="roadmap-item" key={idx} style={{ animationDelay: `${idx * 0.07}s` }}>
                                             <div className="roadmap-dot">{idx + 1}</div>
                                             <div className="roadmap-content">
                                                 <div className="card card-glow" style={{ marginBottom: 0 }}>
@@ -185,16 +193,16 @@ export default function Roadmap() {
 
                                                     {/* Practice problems */}
                                                     <div style={{ marginTop: '0.875rem' }}>
-                                                        <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.5rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                                        <p style={{ fontSize: '0.73rem', color: 'var(--text-muted)', marginBottom: '0.5rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                                                             Practice Problems
                                                         </p>
                                                         <div className="tags-cloud">
                                                             {item.practice_problems.map(p => (
                                                                 <span key={p} className="skill-tag" style={{
                                                                     background: 'rgba(99,102,241,0.08)',
-                                                                    border: '1px solid rgba(99,102,241,0.2)',
+                                                                    border: '1px solid rgba(99,102,241,0.18)',
                                                                     color: '#c7d2fe',
-                                                                    fontSize: '0.75rem',
+                                                                    fontSize: '0.73rem',
                                                                 }}>
                                                                     {p}
                                                                 </span>

@@ -19,6 +19,31 @@
     background-clip: text;
 }
 
+/* ── Category Progress Bars ──────────────────────────────────────────────────── */
+.category-section {
+    margin-bottom: 1rem;
+}
+
+.category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.625rem;
+}
+
+.category-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: capitalize;
+    letter-spacing: 0.02em;
+}
+
+.category-count {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
 /* ── Skill Columns ──────────────────────────────────────────────────────────── */
 .skills-two-col {
     display: grid;
@@ -56,6 +81,7 @@
 .resource-card:hover {
     background: var(--bg-card-hover);
     border-color: rgba(99, 102, 241, 0.25);
+    transform: translateX(4px);
 }
 
 .resource-card-icon {
@@ -73,4 +99,26 @@
     font-size: 0.8rem;
     color: var(--text-secondary);
     line-height: 1.5;
+}
+
+/* ── Empty State ─────────────────────────────────────────────────────────────── */
+.skillgap-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.skillgap-empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+.skillgap-empty p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    max-width: 240px;
 }

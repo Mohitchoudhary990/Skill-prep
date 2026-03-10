@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import axios from 'axios'
 import '../styles/interview.css'
 
-const API = 'http://localhost:5000/api'
+const API = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000/api'
 
 const ROLES = [
     { key: 'SDE', icon: '💻', label: 'SDE' },
@@ -10,14 +10,14 @@ const ROLES = [
     { key: 'Data Analyst', icon: '📊', label: 'Data Analyst' },
 ]
 const COMPANY_TYPES = [
-    { key: 'Product', icon: '🚀', label: 'Product Company' },
-    { key: 'Service', icon: '🏢', label: 'Service Company' },
+    { key: 'Product', icon: '🚀', label: 'Product' },
+    { key: 'Service', icon: '🏢', label: 'Service' },
 ]
 
 const SCORE_COLOR = (s) => s >= 8 ? '#10b981' : s >= 6 ? '#6366f1' : s >= 4 ? '#f59e0b' : '#ef4444'
 
 export default function MockInterview() {
-    const [step, setStep] = useState('config')    // config | question | result
+    const [step, setStep] = useState('config')
     const [role, setRole] = useState('SDE')
     const [companyType, setCompanyType] = useState('Product')
     const [questionData, setQData] = useState(null)
@@ -64,6 +64,8 @@ export default function MockInterview() {
 
     const nextQuestion = () => fetchQuestion(qIdx + 1)
 
+    const totalDots = Math.min(questionData?.total_questions || 0, 10)
+
     return (
         <div className="page">
             <div className="container" style={{ maxWidth: 800 }}>
@@ -93,7 +95,7 @@ export default function MockInterview() {
 
                         <div className="form-group">
                             <label>Company Type</label>
-                            <div className="role-selector" style={{ gridTemplateColumns: '1fr 1fr' }}>
+                            <div className="role-selector" style={{ gridTemplateColumns: '1fr 1fr', maxWidth: 360 }}>
                                 {COMPANY_TYPES.map(c => (
                                     <div key={c.key}
                                         className={`role-card ${companyType === c.key ? 'selected' : ''}`}
@@ -109,11 +111,13 @@ export default function MockInterview() {
 
                         <button className="btn btn-primary btn-lg" style={{ width: '100%' }}
                             onClick={() => fetchQuestion(0)} disabled={loading}>
-                            {loading ? '⏳ Loading...' : '🎤 Start Interview'}
+                            {loading ? (
+                                <><span className="spinner" style={{ width: 18, height: 18, borderWidth: 2 }} /> Loading…</>
+                            ) : '🎤 Start Interview'}
                         </button>
 
                         <div className="info-box info-box-info" style={{ marginTop: '1rem' }}>
-                            💡 Tips: Write your answer as if explaining to an interviewer. Include key concepts, approach, and time complexity where relevant.
+                            💡 <strong>Tips:</strong> Write as if explaining to an interviewer. Include key concepts, approach, and time complexity where relevant.
                         </div>
                     </div>
                 )}
@@ -121,12 +125,18 @@ export default function MockInterview() {
                 {/* ── Question ── */}
                 {step === 'question' && questionData && (
                     <div className="animate-fade-in">
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-                            <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-                                Question {qIdx + 1} of {questionData.total_questions}
+                        {/* Progress header */}
+                        <div className="interview-progress">
+                            <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                                Question <strong style={{ color: 'var(--text-primary)' }}>{qIdx + 1}</strong> of {questionData.total_questions}
                             </span>
+                            <div className="interview-progress-dots">
+                                {Array.from({ length: totalDots }).map((_, i) => (
+                                    <div key={i} className={`progress-dot ${i < qIdx ? 'done' : i === qIdx ? 'current' : ''}`} />
+                                ))}
+                            </div>
                             <button className="btn btn-secondary btn-sm" onClick={() => setStep('config')}>
-                                ← Change Config
+                                ← Change
                             </button>
                         </div>
 
@@ -136,8 +146,11 @@ export default function MockInterview() {
                                     {questionData.difficulty}
                                 </span>
                                 <span className="skill-tag skill-tag-user">{questionData.topic}</span>
+                                <span style={{ marginLeft: 'auto', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                                    {role} · {companyType}
+                                </span>
                             </div>
-                            <h3 style={{ fontSize: '1.05rem', lineHeight: '1.6', marginBottom: '1.5rem' }}>
+                            <h3 style={{ fontSize: '1.05rem', lineHeight: '1.65', marginBottom: '1.5rem' }}>
                                 {questionData.question}
                             </h3>
 
@@ -156,7 +169,9 @@ export default function MockInterview() {
                             <div style={{ display: 'flex', gap: '1rem' }}>
                                 <button className="btn btn-primary" style={{ flex: 1 }}
                                     onClick={submitAnswer} disabled={loading || !answer.trim()}>
-                                    {loading ? '⏳ Evaluating...' : '📊 Submit & Evaluate'}
+                                    {loading ? (
+                                        <><span className="spinner" style={{ width: 16, height: 16, borderWidth: 2 }} /> Evaluating…</>
+                                    ) : '📊 Submit & Evaluate'}
                                 </button>
                                 <button className="btn btn-secondary" onClick={nextQuestion} disabled={loading}>
                                     Skip →
@@ -169,11 +184,20 @@ export default function MockInterview() {
                 {/* ── Result ── */}
                 {step === 'result' && evaluation && (
                     <div className="animate-fade-in">
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
                             <h3>📊 Evaluation Results</h3>
                             <div style={{ display: 'flex', gap: '0.75rem' }}>
-                                <button className="btn btn-secondary btn-sm" onClick={nextQuestion}>Next Question →</button>
+                                <button className="btn btn-primary btn-sm" onClick={nextQuestion}>Next Question →</button>
                                 <button className="btn btn-outline btn-sm" onClick={() => setStep('config')}>Restart</button>
+                            </div>
+                        </div>
+
+                        {/* Grade banner */}
+                        <div className="grade-banner">
+                            <div className="grade-letter">{evaluation.grade}</div>
+                            <div>
+                                <div style={{ fontWeight: 600, marginBottom: '0.25rem' }}>Overall Grade</div>
+                                <div style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>{evaluation.feedback}</div>
                             </div>
                         </div>
 
@@ -184,27 +208,20 @@ export default function MockInterview() {
                                 { label: 'Depth', val: evaluation.scores.depth },
                                 { label: 'Clarity', val: evaluation.scores.clarity },
                                 { label: 'Overall', val: evaluation.scores.overall },
-                            ].map(s => (
-                                <div className="score-item" key={s.label}>
+                            ].map((s, i) => (
+                                <div className="score-item" key={s.label} style={{ animationDelay: `${i * 0.1}s` }}>
                                     <div className="score-value" style={{ color: SCORE_COLOR(s.val) }}>
-                                        {s.val}
+                                        {s.val}<span style={{ fontSize: '1rem', opacity: 0.6 }}>/10</span>
                                     </div>
                                     <div className="score-label">{s.label}</div>
-                                    <div style={{ marginTop: '0.5rem' }}>
-                                        <div className="progress-bar">
-                                            <div className="progress-fill" style={{
-                                                width: `${s.val * 10}%`,
-                                                background: SCORE_COLOR(s.val),
-                                            }} />
-                                        </div>
+                                    <div className="progress-bar" style={{ height: 4 }}>
+                                        <div className="progress-fill" style={{
+                                            width: `${s.val * 10}%`,
+                                            background: SCORE_COLOR(s.val),
+                                        }} />
                                     </div>
                                 </div>
                             ))}
-                        </div>
-
-                        {/* Grade badge */}
-                        <div className="info-box info-box-info" style={{ marginBottom: '1.25rem' }}>
-                            <strong>Grade: {evaluation.grade}</strong> — {evaluation.feedback}
                         </div>
 
                         {/* Keywords matched */}

@@ -5,6 +5,7 @@
     display: flex;
     gap: 1.5rem;
     position: relative;
+    animation: fadeInUp 0.5s ease both;
 }
 
 .roadmap-item:not(:last-child)::before {
@@ -14,15 +15,15 @@
     top: 46px;
     width: 2px;
     height: calc(100% + 1.5rem);
-    background: linear-gradient(to bottom, var(--accent), transparent);
-    opacity: 0.3;
+    background: linear-gradient(to bottom, rgba(99, 102, 241, 0.5), rgba(99, 102, 241, 0.05));
+    opacity: 0.6;
 }
 
 .roadmap-dot {
     width: 42px;
     height: 42px;
     border-radius: 50%;
-    background: rgba(99, 102, 241, 0.15);
+    background: rgba(99, 102, 241, 0.12);
     border: 2px solid var(--accent);
     display: flex;
     align-items: center;
@@ -33,10 +34,20 @@
     flex-shrink: 0;
     position: relative;
     z-index: 1;
+    transition: all var(--transition);
+    font-family: 'JetBrains Mono', monospace;
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+}
+
+.roadmap-item:hover .roadmap-dot {
+    background: rgba(99, 102, 241, 0.25);
+    box-shadow: 0 0 0 6px rgba(99, 102, 241, 0.1), 0 0 20px rgba(99, 102, 241, 0.2);
+    transform: scale(1.1);
 }
 
 .roadmap-content {
     flex: 1;
+    padding-bottom: 0.5rem;
 }
 
 /* ── Resources ──────────────────────────────────────────────────────────────── */
@@ -58,40 +69,73 @@
     text-decoration: none;
     color: var(--text-secondary);
     font-size: 0.825rem;
-    transition: var(--transition);
+    transition: all var(--transition);
 }
 
 .resource-item:hover {
     background: rgba(99, 102, 241, 0.08);
-    border-color: rgba(99, 102, 241, 0.25);
+    border-color: rgba(99, 102, 241, 0.2);
     color: var(--text-primary);
+    transform: translateX(4px);
 }
 
 .resource-type {
-    font-size: 0.7rem;
-    padding: 0.125rem 0.5rem;
+    font-size: 0.68rem;
+    padding: 0.125rem 0.6rem;
     border-radius: 100px;
     text-transform: uppercase;
     font-weight: 700;
     letter-spacing: 0.05em;
+    flex-shrink: 0;
 }
 
 .rt-video {
     background: rgba(239, 68, 68, 0.15);
     color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .rt-article {
     background: rgba(99, 102, 241, 0.15);
     color: #a5b4fc;
+    border: 1px solid rgba(99, 102, 241, 0.2);
 }
 
 .rt-course {
     background: rgba(16, 185, 129, 0.15);
     color: #6ee7b7;
+    border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 .rt-practice {
     background: rgba(245, 158, 11, 0.15);
     color: #fcd34d;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+/* ── Roadmap Summary Banner ──────────────────────────────────────────────────── */
+.roadmap-summary {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.roadmap-summary-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.roadmap-summary-stat strong {
+    color: var(--accent);
+    font-size: 1rem;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .roadmap-item {
+        gap: 1rem;
+    }
 }

@@ -3,7 +3,7 @@ import axios from 'axios'
 import ScoreGauge from '../components/ScoreGauge'
 import '../styles/predictor.css'
 
-const API = 'http://localhost:5000/api'
+const API = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000/api'
 
 const defaults = {
     cgpa: '',
@@ -13,6 +13,13 @@ const defaults = {
     communication: '',
     open_source_contribs: '',
     hackathons: '',
+}
+
+const getTierClass = (prob) => {
+    if (prob >= 75) return 'tier-excellent'
+    if (prob >= 55) return 'tier-good'
+    if (prob >= 35) return 'tier-average'
+    return 'tier-weak'
 }
 
 export default function Predictor() {
@@ -49,6 +56,7 @@ export default function Predictor() {
         <div className="page">
             <div className="container">
                 <div className="page-header">
+                    <div className="ml-badge">🤖 Random Forest ML Model</div>
                     <h1>🎯 Placement Readiness <span className="gradient-text">Predictor</span></h1>
                     <p>Our Random Forest ML model analyzes 7 key factors to predict your placement probability.</p>
                 </div>
@@ -56,7 +64,7 @@ export default function Predictor() {
                 <div className="two-col" style={{ alignItems: 'start', gap: '2rem' }}>
                     {/* ── Form ── */}
                     <div className="card">
-                        <h3 style={{ marginBottom: '1.25rem' }}>Enter Your Profile</h3>
+                        <h3 style={{ marginBottom: '1.5rem' }}>Enter Your Profile</h3>
                         <form onSubmit={handleSubmit}>
                             <div className="two-col">
                                 <div className="form-group">
@@ -103,7 +111,9 @@ export default function Predictor() {
                             </div>
                             {error && <div className="info-box info-box-danger" style={{ marginBottom: '1rem' }}>{error}</div>}
                             <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
-                                {loading ? '⏳ Predicting...' : '🚀 Predict Placement Probability'}
+                                {loading ? (
+                                    <><span className="spinner" style={{ width: 18, height: 18, borderWidth: 2 }} /> Predicting…</>
+                                ) : '🚀 Predict Placement Probability'}
                             </button>
                         </form>
                     </div>
@@ -111,29 +121,24 @@ export default function Predictor() {
                     {/* ── Result ── */}
                     <div>
                         {!result && !loading && (
-                            <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
-                                <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🤖</div>
-                                <p style={{ color: 'var(--text-secondary)' }}>
-                                    Fill the form and submit to see your placement probability.
+                            <div className="card" style={{ textAlign: 'center', padding: '3.5rem 2rem' }}>
+                                <div style={{ fontSize: '4.5rem', marginBottom: '1rem' }} className="animate-float">🤖</div>
+                                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                                    Fill in your profile details and hit predict to see your placement probability.
                                 </p>
                             </div>
                         )}
                         {loading && (
-                            <div className="card loading-center">
-                                <div className="spinner"></div>
-                                <span>Analyzing with ML model...</span>
+                            <div className="card loading-center" style={{ minHeight: 200 }}>
+                                <div className="spinner" />
+                                <span>Analyzing with ML model…</span>
                             </div>
                         )}
                         {result && (
                             <div className="results-panel">
                                 <div className="card" style={{ textAlign: 'center', marginBottom: '1.25rem', padding: '2rem' }}>
                                     <ScoreGauge value={result.probability} label="Placement Probability" />
-                                    <div style={{
-                                        fontSize: '1.1rem',
-                                        fontWeight: '700',
-                                        color: result.color,
-                                        marginTop: '0.75rem',
-                                    }}>
+                                    <div className={`tier-banner ${getTierClass(result.probability)}`}>
                                         {result.tier}
                                     </div>
                                 </div>
@@ -146,9 +151,9 @@ export default function Predictor() {
                                 {result.recommendations?.length > 0 && (
                                     <div className="card">
                                         <h4 style={{ marginBottom: '1rem' }}>💡 Recommendations</h4>
-                                        <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+                                        <ul className="recommendation-list">
                                             {result.recommendations.map((r, i) => (
-                                                <li key={i} style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>{r}</li>
+                                                <li key={i} className="recommendation-item">{r}</li>
                                             ))}
                                         </ul>
                                     </div>

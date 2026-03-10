@@ -3,7 +3,7 @@ import axios from 'axios'
 import ScoreGauge from '../components/ScoreGauge'
 import '../styles/skillgap.css'
 
-const API = 'http://localhost:5000/api'
+const API = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000/api'
 
 const ROLES = [
     { key: 'SDE', icon: '💻', label: 'SDE' },
@@ -91,7 +91,7 @@ export default function SkillGap() {
 
                             {/* Skills input */}
                             <div className="form-group">
-                                <label>Your Skills <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>(press Enter or comma to add)</span></label>
+                                <label>Your Skills <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>(press Enter or comma)</span></label>
                                 <div className="input-tag-container" onClick={() => inputRef.current?.focus()}>
                                     {skills.map(s => (
                                         <span key={s} className="skill-tag skill-tag-user" onClick={() => removeSkill(s)}>
@@ -117,13 +117,15 @@ export default function SkillGap() {
 
                             <div className="form-group">
                                 <label>Projects <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>(one per line)</span></label>
-                                <textarea placeholder="e.g.&#10;ML Fraud Detection App&#10;Portfolio Website with React&#10;DSA Visualizer"
+                                <textarea placeholder={"e.g.\nML Fraud Detection App\nPortfolio Website with React\nDSA Visualizer"}
                                     value={projects} onChange={e => setProjects(e.target.value)} style={{ minHeight: 100 }} />
                             </div>
 
                             {error && <div className="info-box info-box-danger" style={{ marginBottom: '1rem' }}>{error}</div>}
                             <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
-                                {loading ? '⏳ Analyzing...' : '🔍 Analyze My Skill Gap'}
+                                {loading ? (
+                                    <><span className="spinner" style={{ width: 18, height: 18, borderWidth: 2 }} /> Analyzing…</>
+                                ) : '🔍 Analyze My Skill Gap'}
                             </button>
                         </form>
                     </div>
@@ -131,15 +133,15 @@ export default function SkillGap() {
                     {/* ── Result ── */}
                     <div>
                         {!result && !loading && (
-                            <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
-                                <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎯</div>
-                                <p style={{ color: 'var(--text-secondary)' }}>Your skill gap analysis will appear here.</p>
+                            <div className="card skillgap-empty">
+                                <div className="skillgap-empty-icon">🎯</div>
+                                <p>Your skill gap analysis will appear here after you submit.</p>
                             </div>
                         )}
                         {loading && (
                             <div className="card loading-center">
-                                <div className="spinner"></div>
-                                <span>Comparing against {role} requirements...</span>
+                                <div className="spinner" />
+                                <span>Comparing against {role} requirements…</span>
                             </div>
                         )}
                         {result && (
@@ -148,19 +150,26 @@ export default function SkillGap() {
                                 <div className="card" style={{ textAlign: 'center', marginBottom: '1.25rem', padding: '2rem' }}>
                                     <ScoreGauge value={Math.round(result.readiness_score)} label={`${result.role} Readiness`} />
                                     <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '0.75rem' }}>
-                                        {result.total_matched} / {result.total_required} required skills matched
+                                        <strong>{result.total_matched}</strong> / {result.total_required} required skills matched
                                     </p>
                                 </div>
 
-                                {/* Missing skills */}
-                                {Object.entries(result.missing_by_category || {}).map(([cat, skills]) => (
-                                    skills.length > 0 && (
+                                {/* Missing skills by category */}
+                                {Object.entries(result.missing_by_category || {}).map(([cat, catSkills]) => (
+                                    catSkills.length > 0 && (
                                         <div className="card" style={{ marginBottom: '1rem' }} key={cat}>
-                                            <h4 style={{ marginBottom: '0.875rem', textTransform: 'capitalize', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                                                ❌ Missing — {cat}
-                                            </h4>
+                                            <div className="category-header">
+                                                <span className="category-name">❌ {cat}</span>
+                                                <span className="category-count">{catSkills.length} missing</span>
+                                            </div>
+                                            <div className="progress-bar" style={{ marginBottom: '0.875rem' }}>
+                                                <div className="progress-fill" style={{
+                                                    width: `${Math.max(10, ((result.total_matched / result.total_required) * 100))}%`,
+                                                    background: 'var(--danger)',
+                                                }} />
+                                            </div>
                                             <div className="tags-cloud">
-                                                {skills.map(s => <span key={s} className="skill-tag skill-tag-missing">{s}</span>)}
+                                                {catSkills.map(s => <span key={s} className="skill-tag skill-tag-missing">{s}</span>)}
                                             </div>
                                         </div>
                                     )
@@ -169,7 +178,7 @@ export default function SkillGap() {
                                 {/* Matched skills */}
                                 {result.matched_skills?.length > 0 && (
                                     <div className="card" style={{ marginBottom: '1rem' }}>
-                                        <h4 style={{ marginBottom: '0.875rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                                        <h4 style={{ marginBottom: '0.875rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
                                             ✅ Skills You Have
                                         </h4>
                                         <div className="tags-cloud">
@@ -181,7 +190,7 @@ export default function SkillGap() {
                                 {/* Weak areas */}
                                 {result.weak_areas?.length > 0 && (
                                     <div className="card">
-                                        <h4 style={{ marginBottom: '0.875rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                                        <h4 style={{ marginBottom: '0.875rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
                                             ⚡ Weak Areas
                                         </h4>
                                         {result.weak_areas.map((w, i) => (
