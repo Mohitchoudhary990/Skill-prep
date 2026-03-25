@@ -57,6 +57,15 @@ export default function MockInterview() {
             })
             setEval(data)
             setStep('result')
+            localStorage.setItem('interviewResult', JSON.stringify({
+                role,
+                companyType,
+                overallScore: data.scores?.overall ?? 0,
+                technicalScore: data.scores?.technical ?? 0,
+                depthScore: data.scores?.depth ?? 0,
+                clarityScore: data.scores?.clarity ?? 0,
+                grade: data.grade,
+            }))
         } catch (e) {
             setError('Could not evaluate answer.')
         } finally { setLoading(false) }

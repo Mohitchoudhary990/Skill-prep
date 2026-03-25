@@ -45,6 +45,11 @@ export default function Predictor() {
             }
             const { data } = await axios.post(`${API}/predict`, payload)
             setResult(data)
+            localStorage.setItem('predictorResult', JSON.stringify({
+                probability: data.probability,
+                tier: data.tier,
+                recommendations: data.recommendations,
+            }))
         } catch (err) {
             setError('Could not connect to the backend. Make sure backend + ML service are running.')
         } finally {

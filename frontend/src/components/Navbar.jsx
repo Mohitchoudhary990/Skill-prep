@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import '../styles/navbar.css'
 import { HiSparkles } from 'react-icons/hi2'
-import { FiLogOut, FiLogIn, FiUserPlus, FiHome, FiTarget, FiSearch, FiMic, FiMap } from 'react-icons/fi'
+import { FiLogOut, FiLogIn, FiUserPlus, FiHome, FiTarget, FiSearch, FiMic, FiMap, FiGrid } from 'react-icons/fi'
 import { useAuth } from '../context/AuthContext'
 
 const links = [
     { to: '/', label: 'Home', icon: <FiHome /> },
+    { to: '/dashboard', label: 'Dashboard', icon: <FiGrid /> },
     { to: '/predict', label: 'Predictor', icon: <FiTarget /> },
     { to: '/skill-gap', label: 'Skill Gap', icon: <FiSearch /> },
     { to: '/mock-interview', label: 'Interview', icon: <FiMic /> },

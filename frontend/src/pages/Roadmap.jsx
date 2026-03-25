@@ -41,6 +41,12 @@ export default function Roadmap() {
                 target_weeks: parseInt(targetWeeks || 12),
             })
             setResult(data)
+            localStorage.setItem('roadmapResult', JSON.stringify({
+                jobRole: role,
+                totalTopics: data.total_topics,
+                targetWeeks: data.target_weeks,
+                generatedAt: new Date().toISOString(),
+            }))
         } catch (err) {
             setError('Cannot connect to backend. Ensure backend + ML service are running.')
         } finally { setLoading(false) }

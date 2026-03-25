@@ -10,6 +10,7 @@ import SkillGap from './pages/SkillGap'
 import MockInterview from './pages/MockInterview'
 import Predictor from './pages/Predictor'
 import Roadmap from './pages/Roadmap'
+import Dashboard from './pages/Dashboard'
 
 export default function App() {
     return (
@@ -27,6 +28,7 @@ export default function App() {
                     <Route path="/mock-interview" element={<ProtectedRoute><MockInterview /></ProtectedRoute>} />
                     <Route path="/predict" element={<ProtectedRoute><Predictor /></ProtectedRoute>} />
                     <Route path="/roadmap" element={<ProtectedRoute><Roadmap /></ProtectedRoute>} />
+                    <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
 
                     {/* Fallback */}
                     <Route path="*" element={<Navigate to="/" replace />} />

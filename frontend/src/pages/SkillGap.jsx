@@ -52,6 +52,12 @@ export default function SkillGap() {
                 projects: projectList,
             })
             setResult(data)
+            localStorage.setItem('skillGapResult', JSON.stringify({
+                targetRole: data.role || role,
+                readinessScore: Math.round(data.readiness_score),
+                matchedCount: data.total_matched,
+                missingCount: (data.total_required || 0) - (data.total_matched || 0),
+            }))
         } catch (err) {
             setError('Cannot connect to backend. Ensure backend + ML service are running.')
         } finally {

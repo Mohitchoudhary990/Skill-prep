@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const TopicSchema = new mongoose.Schema({
     name: { type: String, required: true },
-    category: { type: String }, // e.g. "Data Structures", "System Design"
+    category: { type: String }, // e.g. "Data Structures", "System Design
     status: {
         type: String,
         enum: ['not-started', 'in-progress', 'completed'],
